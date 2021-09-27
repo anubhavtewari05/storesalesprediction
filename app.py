@@ -1,13 +1,11 @@
-import numpy as np
+
 from flask import Flask, render_template, request, jsonify
 import joblib
-import os
-import numpy
-from sklearn.preprocessing import LabelEncoder
-le=LabelEncoder()
+import numpy as np
 
-from sklearn.preprocessing import StandardScaler
-sc= StandardScaler()
+
+
+
 
 app = Flask(__name__)
 
@@ -15,7 +13,7 @@ app = Flask(__name__)
 def index():
     return render_template('home.html')
 
-@app.route("/result", methods=["POST","GET"])
+@app.route("/result", methods=["POST"])
 def result():
     list_col=['item_weight', 'item_fat_content', 'item_visibility', 'item_type',
               'item_mrp', 'outlet_establishment_year', 'outlet_size',
@@ -36,7 +34,7 @@ def result():
 
     # Label Encoding
 
-    le=joblib.load(r'F:\ML Projects\Store Sales\App\Models\le.sav')
+    le=joblib.load('le.sav')
 
     item_fat_content=le.fit_transform([item_fat_content])
     item_type=le.fit_transform([item_type])
@@ -46,8 +44,7 @@ def result():
 
     inputs= np.array([item_weight,item_fat_content,item_visibility,item_type, item_mrp, outlet_establishment_year,
                       outlet_size,outlet_location_type, outlet_type]).reshape(1,-1)
-    print(inputs)
-
+    
 
 # Lets put all in the list
 
@@ -55,12 +52,12 @@ def result():
 
     # Lets apply Standard Scaler
 
-    sc = joblib.load(r'F:\ML Projects\Store Sales\App\Models\sc.sav')
+    sc = joblib.load('sc.sav')
     inputs_std= sc.transform(inputs)
 
     # Lets apply prediction
 
-    model=joblib.load(r'F:\ML Projects\Store Sales\App\Models\gbr.sav')
+    model=joblib.load('gbr.sav')
 
     prediction=model.predict(inputs_std)
     prediction=prediction.tolist()
@@ -71,4 +68,4 @@ def result():
 
 
 if __name__ == '__main__':
-    app.run(debug=True,port=5000)
+    app.run(debug=True,port=7890)
